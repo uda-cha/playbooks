@@ -1,0 +1,24 @@
+---
+- name: ufw dont leave logs
+  ufw:
+    logging: "off"
+  notify: reload ufw
+
+- name: ufw accept ports
+  ufw:
+    rule: allow
+    port: "{{ item.port }}"
+    proto: "{{ item.proto }}"
+  with_items: "{{ allowedPorts }}"
+  notify: reload ufw
+
+- name: ufw set default policy
+  ufw:
+    direction: incoming
+    policy: deny
+  notify: reload ufw
+
+- name: ufw enable
+  ufw:
+    state: enabled
+...

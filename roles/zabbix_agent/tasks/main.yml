@@ -1,0 +1,98 @@
+---
+- name: install prerequisite packages of zabbix agent(yum)
+  yum:
+    name: epel-release
+    update_cache: yes
+  when: "ansible_pkg_mgr == 'yum'"
+
+- name: install zabbix agent(yum)
+  yum:
+    name: zabbix30-agent
+    update_cache: yes
+    enablerepo: epel
+  when: "ansible_pkg_mgr == 'yum'"
+  notify: restart zabbix agent
+
+- name: install zabbix agent(apt)
+  apt:
+    name: zabbix-agent
+    update_cache: yes
+  when: "ansible_pkg_mgr == 'apt'"
+  notify: restart zabbix agent
+
+- name: allow 10050/tcp by firewalld
+  firewalld:
+    port: 10050/tcp
+    permanent: yes
+    state: enabled
+    immediate: yes
+  when: "ansible_os_family == 'RedHat'"
+  notify: reload firewalld
+
+- name: allow 10050/tcp by ufw
+  ufw:
+    rule: allow
+    port: "10050"
+    proto: tcp
+  when: "ansible_os_family == 'Debian'"
+  notify: reload ufw
+
+- name: edit zabbix_agentd.conf
+  lineinfile:
+    path: /etc/zabbix/zabbix_agentd.conf
+    regexp: "{{ item.regexp }}"
+    insertafter: "{{ item.insertafter }}"
+    line: "{{ item.line }}"
+    backrefs: "{{ item.backrefs }}"
+    state: present
+  with_items:
+    - { regexp: '^Server=', insertafter: '^#Server=', line: "Server={{ zbxsv_address }}", backrefs: "no" }
+    - { regexp: '^ServerActive=', insertafter: '^#ServerActive=', line: "ServerActive={{ zbxsv_address }}", backrefs: "no" }
+    - { regexp: '^Hostname=', insertafter: 'ignored_by_backrefs', line: "{{ zbxsv_hostname }}", backrefs: "yes" }
+    - { regexp: '^HostnameItem=', insertafter: '^#HostnameItem=', line: "HostnameItem=system.hostname", backrefs: "no" }
+    - { regexp: '^HostMetadata=', insertafter: '^#HostMetadata=', line: "HostMetadata=webserver", backrefs: "no" }
+  notify: restart zabbix agent
+
+- name: include zabbix_agentd.conf.d
+  lineinfile:
+    path: /etc/zabbix/zabbix_agentd.conf
+    line: "{{ item.line }}"
+    state: present
+  with_items:
+    - { line: "Include=/etc/zabbix/zabbix_agentd.conf.d/*.conf" }
+  notify: restart zabbix agent
+
+- name: mkdir /etc/zabbix/zabbix_agentd.conf.d/
+  file:
+    path: /etc/zabbix/zabbix_agentd.conf.d
+    state: directory
+    mode: 0755
+    owner: root
+    group: root
+
+- name: copy config files in ../files/*.conf
+  copy:
+    src: "{{ item }}"
+    dest: /etc/zabbix/zabbix_agentd.conf.d/
+    owner: root
+    group: root
+    mode: 0644
+  with_fileglob:
+    - "*.conf"
+  notify: restart zabbix agent
+
+- name: copy config files for monitoring mysql
+  template:
+    src: zabbix_my.cnf.j2
+    dest: /etc/zabbix/zabbix_agentd.conf.d/zabbix_my.cnf
+    owner: root
+    group: root
+    mode: 0644
+  notify: restart zabbix agent
+  #no_log: True
+
+- name: enable zabbix agent
+  systemd:
+    name: zabbix-agent
+    enabled: yes
+...

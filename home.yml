@@ -1,0 +1,5 @@
+---
+- import_playbook: srtevmcos701.yml
+- import_playbook: SRTEVMkali01.yml
+- import_playbook: srtevmub01.yml
+- import_playbook: srtppc02.yml

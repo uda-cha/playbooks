@@ -1,0 +1,4 @@
+---
+# ssh connection default settings
+ansible_become: True
+ansible_become_method: sudo 

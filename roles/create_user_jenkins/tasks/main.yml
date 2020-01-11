@@ -1,0 +1,32 @@
+---
+- name: add the group 'jenkins'
+  group:
+    name: jenkins
+    state: present
+
+- name: add the user 'jenkins'
+  user:
+    name: jenkins
+    group: jenkins
+    shell: /bin/bash
+    password: "{{ vaulted_passwd }}"
+    state: present
+
+- name: add the user 'jenkins' to sudoers
+  lineinfile:
+    path: /etc/sudoers
+    regexp: "{{ item.match }}"
+    line: "{{ item.line }}"
+  with_items:
+    - { match: "^jenkins", line: "jenkins ALL=(ALL) NOPASSWD: {{ command_jenkins_can_sudo }}" }
+  when: command_jenkins_can_sudo is defined
+
+- name: enable the user 'jenkins' to sudo with no tty
+  lineinfile:
+    path: /etc/sudoers
+    insertafter: "{{ item.insertafter }}"
+    line: "{{ item.line }}"
+    validate: 'visudo -cf %s'
+  with_items:
+    - { regexp: '^Defaults:jenkins.*[^!]visiblepw$', insertafter: '!visiblepw', line: "Defaults:jenkins   visiblepw", backrefs: "yes" }
+...

@@ -1,0 +1,68 @@
+[global]
+dos charset = CP932
+unix charset = UTF-8
+workgroup = {{ samba_workgroup }}
+server string = Samba %v on %h Linux
+hosts allow = {{ samba_hosts_allow }}
+netbios name = {{ inventory_hostname_short }}
+security = user
+map to guest = bad user
+dns proxy = no
+log level = 3
+
+#SMBデジタル署名
+server signing = auto
+client signing = auto
+#SMB暗号化(Linux間の通信のみ適用)
+smb encrypt = auto
+#SMBプロトコル。NT1以上はAndroidからアクセスできなかった
+server min protocol = NT1
+
+#プリンタ関連のログを抑制する
+load printers = no
+printing = bsd
+printcap name = /dev/null
+
+{% if samba_path_private is defined %}
+host msdfs = no
+passdb backend = tdbsam
+
+{% endif %}
+#==========================================================
+
+[Share]
+#共有させるフォルダ
+path = {{ samba_path }}
+#マイネットワークに表示させるか否か
+browsable =yes
+#ゲストユーザのログインが可能かどうか
+guest ok = yes
+#全てのユーザをゲストとするかどうか
+guest only = yes
+#読込みのみとするか
+read only = no
+#フルアクセスでファイル作成
+create mode = 0666
+#フルアクセスでディレクトリ作成
+directory mode = 0777
+
+{% if samba_path_private is defined %}
+[private]
+#共有させるフォルダ
+path =  {{ samba_path_private }}
+#マイネットワークに表示させるか否か
+browsable = no
+#ゲストユーザのログインが可能かどうか
+guest ok = yes
+#全てのユーザをゲストとするかどうか
+guest only = yes
+#読込みのみとするか
+read only = no
+#フルアクセスでファイル作成
+create mode = 0600
+#フルアクセスでディレクトリ作成
+directory mode = 0700
+#読み書き可能なユーザ
+valid users =  {{ samba_valid_users_private }}
+
+{% endif %}

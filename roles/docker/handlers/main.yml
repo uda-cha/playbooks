@@ -1,0 +1,8 @@
+---
+- name: restart docker(RedHat)
+  systemd:
+    name: docker
+    state: restarted
+  when: "ansible_os_family == 'RedHat'"
+  listen: restart docker
+...

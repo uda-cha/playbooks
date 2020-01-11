@@ -1,0 +1,6 @@
+---
+# ssh connection settings for host created by vagrant
+ansible_ssh_user: vagrant
+ansible_ssh_pass: vagrant
+ansible_become: true
+ansible_become_method: sudo

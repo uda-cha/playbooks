@@ -1,0 +1,67 @@
+---
+- name: samba install(apt)
+  apt:
+    name: samba
+    update_cache: yes
+  when: "ansible_pkg_mgr == 'apt'"
+  notify: restart samba
+
+- name: samba install(yum)
+  yum:
+    name: samba
+    update_cache: yes
+  when: "ansible_pkg_mgr == 'yum'"
+  notify: restart samba
+
+- name: create nogroup
+  group:
+    name: nogroup
+    state: present
+
+- name: samba mkdir
+  file:
+    path: "{{ samba_path }}"
+    state: directory
+    mode: 0777
+    owner: nobody
+    group: nogroup
+
+- name: samba mkdir for private
+  file:
+    path: "{{ samba_path_private }}"
+    state: directory
+    mode: 0777
+    owner: "{{ samba_valid_users_private }}"
+    #groupはownerから自動的に判別させる
+  when:
+    - samba_path_private is defined
+    - samba_valid_users_private is defined
+
+- name: samba distribute config file
+  template:
+    src: smb.conf.j2
+    dest: /etc/samba/smb.conf
+    owner: root
+    group: root
+    mode: 0644
+    backup: yes
+  notify: restart samba
+
+- name: enable samba(Debian)
+  systemd:
+    name: "{{ item }}"
+    enabled: yes
+  with_items:
+    - smbd
+    - nmbd
+  when: "ansible_os_family == 'Debian'"
+
+- name: enable samba(RedHat)
+  systemd:
+    name: "{{ item }}"
+    enabled: yes
+  with_items:
+    - smb
+    - nmb
+  when: "ansible_os_family == 'RedHat'"
+...

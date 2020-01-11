@@ -1,0 +1,25 @@
+http_port 8080
+visible_hostname {{ inventory_hostname_short }}
+
+acl to_localnet dst 192.168.100.0/24
+acl localnet src 192.168.100.0/24
+acl blacklist dstdomain "{{ squid_blacklist_path }}blacklist"
+acl internet_ports port 80 443
+acl nocache src all
+
+http_access allow localhost
+http_access allow to_localnet
+http_access deny internet_ports blacklist
+http_access allow localnet
+http_access deny all
+
+cache deny nocache
+cache_log /dev/null
+cache_store_log none
+access_log none
+logfile_rotate 0
+
+forwarded_for off
+request_header_access X-Forwarded-For deny all
+request_header_access Via deny all
+request_header_access Cache-Control deny all

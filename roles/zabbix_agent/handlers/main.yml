@@ -1,0 +1,19 @@
+---
+- name: restart zabbix agent
+  systemd:
+    name: zabbix-agent
+    state: restarted
+  listen: restart zabbix agent
+
+- name: reload ufw
+  systemd:
+    name: ufw
+    state: restarted
+  listen: reload ufw
+
+- name: reload firewalld
+  systemd:
+    name: firewalld
+    state: restarted
+  listen: reload firewalld
+...

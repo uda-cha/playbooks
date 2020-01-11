@@ -1,0 +1,7 @@
+---
+  - name: disable wpa_supplicant
+    systemd:
+      name: wpa_supplicant
+      enabled: no
+      state: stopped
+

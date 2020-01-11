@@ -1,0 +1,3 @@
+---
+# enable to manipulate readymedia from jenkins
+command_jenkins_can_sudo: "/bin/systemctl stop minidlna, /sbin/minidlnad, /bin/killall minidlnad, /bin/systemctl start minidlna"

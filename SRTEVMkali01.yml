@@ -1,0 +1,17 @@
+---
+- hosts: EVMkali01
+  roles:
+    - role: disable_wlan0
+    - role: disable_ipv6
+    - role: manage_ufw
+      allowedPorts:
+        - { port: 22, proto: tcp }
+        - { port: 80, proto: tcp }
+        - { port: 3000, proto: tcp }
+        - { port: 3389, proto: tcp }
+        - { port: 8080, proto: tcp }
+        - { port: 8834, proto: tcp }
+        - { port: 10050, proto: tcp }
+    - role: zabbix_agent
+    - role: docker
+    - role: docker-compose

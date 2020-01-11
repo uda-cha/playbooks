@@ -1,0 +1,68 @@
+---
+- name: install prerequisite packages of docker(yum)
+  yum:
+    name:
+      - yum-utils
+      - device-mapper-persistent-data
+      - lvm2
+    update_cache: yes
+  when: "ansible_pkg_mgr == 'yum'"
+
+- name: install prerequisite packages of docker(apt)
+  apt:
+    name:
+      - apt-transport-https
+      - ca-certificates
+      - curl
+      - gnupg-agent
+      - software-properties-common
+    update_cache: yes
+  when: "ansible_pkg_mgr == 'apt'"
+
+- name: add docker repository(yum)
+  get_url:
+    url: https://download.docker.com/linux/centos/docker-ce.repo
+    dest: /etc/yum.repos.d/docker-ce.repo
+  when: "ansible_pkg_mgr == 'yum'"
+
+- name: add docker repository gpg key(apt)
+  apt_key:
+    url: https://download.docker.com/linux/{{ apt_distribution_id }}/gpg
+    state: present
+  when: "ansible_pkg_mgr == 'apt'"
+
+- name: add docker repository(apt)
+  apt_repository:
+    repo: "deb [arch=amd64] https://download.docker.com/linux/{{ apt_distribution_id }} {{ apt_os_distribution }} stable"
+    state: present
+  when: "ansible_pkg_mgr == 'apt'"
+
+- name: install docker(yum)
+  yum:
+    name: docker-ce-{{ docker_version_yum }}
+    update_cache: yes
+  when: "ansible_pkg_mgr == 'yum'"
+  notify: restart docker
+
+- name: install docker(apt)
+  apt:
+    name:
+      - docker-ce={{ docker_version_apt }}
+      - docker-ce-cli={{ docker_version_apt }}
+      - containerd.io={{ containerd_io_version_apt }}
+    update_cache: yes
+  when: "ansible_pkg_mgr == 'apt'"
+  notify: restart docker
+
+- name: enable docker
+  systemd:
+    name: docker
+    enabled: yes
+
+- name: add current user to docker group
+  user:
+    name: "{{ ansible_ssh_user }}"
+    append: yes
+    groups: docker
+    state: present
+...

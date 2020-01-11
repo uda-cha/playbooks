@@ -1,0 +1,8 @@
+---
+- hosts: evmcos701
+  roles:
+    - role: disable_ipv6
+    - role: create_user_jenkins
+    - role: zabbix_agent
+    - role: docker
+    - role: docker-compose

@@ -1,0 +1,21 @@
+---
+- name: restart samba(Debian)
+  systemd:
+    name: "{{ item }}"
+    state: restarted
+  with_items:
+    - smbd
+    - nmbd
+  when: "ansible_os_family == 'Debian'"
+  listen: restart samba
+
+- name: restart samba(RedHat)
+  systemd:
+    name: "{{ item }}"
+    state: restarted
+  with_items:
+    - smb
+    - nmb
+  when: "ansible_os_family == 'RedHat'"
+  listen: restart samba
+...

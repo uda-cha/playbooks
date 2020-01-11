@@ -1,0 +1,15 @@
+---
+newZones:
+  - myfirewall
+
+allowedPorts:
+  - { zone: myfirewall, port: 22/tcp }
+  - { zone: myfirewall, port: 139/tcp }
+  - { zone: myfirewall, port: 445/tcp }
+  - { zone: myfirewall, port: 8080/tcp }
+  - { zone: myfirewall, port: 137/udp }
+  - { zone: myfirewall, port: 138/udp }
+
+zoneAndNIC:
+  - { zone: myfirewall, NIC: eth1 }
+...

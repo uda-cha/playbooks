@@ -1,0 +1,18 @@
+---
+- name: register OS name
+  command: uname -s
+  register: uname_s
+  check_mode: no
+  changed_when: no
+
+- name: register machine type
+  command: uname -m
+  register: uname_m
+  check_mode: no
+  changed_when: no
+
+- name: download docker-compose
+  get_url:
+    url: "https://github.com/docker/compose/releases/download/{{ docker_conpose_version }}/docker-compose-{{ uname_s.stdout }}-{{ uname_m.stdout }}"
+    dest: "/usr/local/bin/docker-compose"
+    mode: 0755

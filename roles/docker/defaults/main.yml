@@ -1,0 +1,6 @@
+---
+docker_version_yum: "19.03.4-3.el7"
+docker_version_apt: "5:19.03.3~3-0~ubuntu-disco"
+containerd_io_version_apt: "1.2.10-3"
+apt_os_distribution: "{{ ansible_distribution_release }}"
+apt_distribution_id: "ubuntu"

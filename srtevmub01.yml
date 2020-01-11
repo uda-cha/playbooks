@@ -1,0 +1,26 @@
+---
+- hosts: evmub01
+  vars:
+    path_to_squid_blacklist: "/samba/share/"
+  roles:
+    - role: disable_wlan0
+    - role: disable_ipv6
+    - role: manage_ufw
+      allowedPorts:
+        - { port: 22, proto: tcp }
+        - { port: 139, proto: tcp }
+        - { port: 445, proto: tcp }
+        - { port: 8080, proto: tcp }
+        - { port: 10050, proto: tcp }
+        - { port: 137, proto: udp }
+        - { port: 138, proto: udp }
+    - role: create_user_jenkins
+    - role: samba
+      samba_workgroup: "SEROTONINWG"
+      samba_hosts_allow: "192.168.100. localhost EXCEPT 192.168.100.1"
+      samba_path: "{{ path_to_squid_blacklist }}"
+    - role: squid
+      squid_blacklist_path: "{{ path_to_squid_blacklist }}"
+    - role: zabbix_agent
+    - role: docker
+    - role: docker-compose

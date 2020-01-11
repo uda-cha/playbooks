@@ -1,0 +1,57 @@
+---
+- name: 1.1.start and enable firewalld
+  systemd:
+    name: firewalld
+    state: started
+    enabled: yes
+
+- name: 1.2.create custom zone
+  firewalld:
+    zone: "{{ item }}"
+    permanent: true
+    state: present
+  with_items: "{{ newZones }}"
+  notify: reload firewalld
+
+- name: 1.3.accept ports
+  firewalld:
+    zone: "{{ item.zone }}"
+    port: "{{ item.port }}"
+    permanent: true
+    state: enabled
+  with_items: "{{ allowedPorts }}"
+  notify: reload firewalld
+
+- name: 1.5.remove public zone
+  firewalld:
+    zone: public
+    interface: "{{ item.NIC }}"
+    permanent: true
+    state: disabled
+  with_items: "{{ zoneAndNIC }}"
+  notify: reload firewalld
+
+#- name: 1.5.remove public zone(nmcli)
+#  nmcli:
+#    conn_name: "System eth1"
+#    zone: public
+#    state: absent
+#
+- name: 1.6.set custom zone to NIC
+  firewalld:
+    zone: "{{ item.zone }}"
+    interface: "{{ item.NIC }}"
+    permanent: true
+    state: enabled
+  with_items: "{{ zoneAndNIC }}"
+  notify: reload firewalld
+
+- name: 1.6.set custom zone to NIC(ifcfg)
+  lineinfile:
+    path: /etc/sysconfig/network-scripts/ifcfg-{{ item.NIC }}
+    line: ZONE={{ item.zone }}
+    regexp: '^ZONE='
+    state: present
+  with_items: "{{ zoneAndNIC }}"
+  notify: reload firewalld
+...

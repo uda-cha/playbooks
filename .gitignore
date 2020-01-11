@@ -1,0 +1,5 @@
+vault_password.txt
+*.log
+group_vars/all/ssh_credentials.yml
+roles/create_user_jenkins/vars/main.yml
+roles/zabbix_agent/defaults/main/mysql_password.yml

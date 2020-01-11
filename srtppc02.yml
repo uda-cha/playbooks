@@ -1,0 +1,11 @@
+---
+- hosts: ppc02
+  roles:
+    - role: create_user_jenkins
+    - role: zabbix_agent
+    - role: samba
+      samba_workgroup: "SEROTONINWG"
+      samba_hosts_allow: "192.168.100. localhost EXCEPT 192.168.100.1"
+      samba_path: "/home/samba/share/"
+      samba_path_private: "/home/samba/private/"
+      samba_valid_users_private: "{{ ansible_ssh_user }}"

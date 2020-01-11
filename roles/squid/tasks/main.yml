@@ -1,0 +1,41 @@
+---
+- name: squid install(apt)
+  apt:
+    name:
+      - squid
+      - squidclient
+    update_cache: yes
+  when: "ansible_pkg_mgr == 'apt'"
+  notify: restart squid
+
+- name: squid install(yum)
+  yum:
+    name: squid
+    update_cache: yes
+  when: "ansible_pkg_mgr == 'yum'"
+  notify: restart squid
+
+- name: squid distribute config file
+  template:
+    src: squid.conf.j2
+    dest: /etc/squid/squid.conf
+    owner: root
+    group: root
+    mode: 0644
+    backup: yes
+  notify: restart squid
+
+- name: squid distribute blacklist
+  copy:
+    src: blacklist
+    dest: /samba/share/blacklist
+    owner: nobody
+    #groupはownerから自動的に判定させる
+    mode: 0666
+  notify: restart squid
+
+- name: squid enable
+  systemd:
+    name: squid
+    enabled: yes
+...
