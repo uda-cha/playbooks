@@ -1,0 +1,40 @@
+---
+- name: install prerequisite packages of readymedia(dnf)
+  dnf:
+    name:
+      - epel-release
+      - https://download1.rpmfusion.org/free/el/rpmfusion-free-release-8.noarch.rpm
+    update_cache: yes
+  when: "ansible_pkg_mgr == 'dnf'"
+
+- name: install readymedia(dnf)
+  dnf:
+    name: minidlna
+  when: "ansible_pkg_mgr == 'dnf'"
+  notify: restart_readymedia
+
+- name: allow 8200/tcp and 1900/udp(RedHat)
+  firewalld:
+    port: "{{ item }}"
+    permanent: yes
+    state: enabled
+    immediate: yes
+  when: "ansible_os_family == 'RedHat'"
+  with_items:
+    - 8200/tcp
+    - 1900/udp
+
+- name: readymedia distribute config file
+  template:
+    src: minidlna.conf.j2
+    dest: /etc/minidlna.conf
+    owner: root
+    group: root
+    mode: 0644
+  notify: restart_readymedia
+
+- name: enable readymedia(RedHat)
+  systemd:
+    name: minidlna
+    enabled: yes
+    state: restarted

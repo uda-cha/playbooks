@@ -12,3 +12,6 @@
       samba_path_private: "/samba/private/"
       samba_valid_users_private: "{{ ansible_ssh_user }}"
     - role: xrdp
+    - role: readymedia
+      readymedia_audio_dir: "/samba/share/02_voice"
+      readymedia_friendly_name: "DLNAServer(srtevmcos801)"

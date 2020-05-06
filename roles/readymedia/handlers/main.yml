@@ -1,0 +1,6 @@
+---
+- name: restart readymedia
+  systemd:
+    name: minidlna
+    state: restarted
+  listen: restart_readymedia
