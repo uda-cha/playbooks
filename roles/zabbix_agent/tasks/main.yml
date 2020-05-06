@@ -5,12 +5,26 @@
     update_cache: yes
   when: "ansible_pkg_mgr == 'yum'"
 
+- name: install prerequisite packages of zabbix agent(dnf)
+  dnf:
+    name: epel-release
+    update_cache: yes
+  when: "ansible_pkg_mgr == 'dnf'"
+
 - name: install zabbix agent(yum)
   yum:
     name: zabbix30-agent
     update_cache: yes
     enablerepo: epel
   when: "ansible_pkg_mgr == 'yum'"
+  notify: restart zabbix agent
+
+- name: install zabbix agent(dnf)
+  dnf:
+    name: zabbix40-agent
+    update_cache: yes
+    enablerepo: epel
+  when: "ansible_pkg_mgr == 'dnf'"
   notify: restart zabbix agent
 
 - name: install zabbix agent(apt)

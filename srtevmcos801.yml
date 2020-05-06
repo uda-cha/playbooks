@@ -1,0 +1,14 @@
+---
+- hosts: evmcos801
+  roles:
+    - role: disable_ipv6
+    - role: disable_wlan0
+    - role: create_user_jenkins
+    - role: zabbix_agent
+    - role: samba
+      samba_workgroup: "SEROTONINWG"
+      samba_hosts_allow: "192.168.100. localhost EXCEPT 192.168.100.1"
+      samba_path: "/samba/share/"
+      samba_path_private: "/samba/private/"
+      samba_valid_users_private: "{{ ansible_ssh_user }}"
+    - role: xrdp

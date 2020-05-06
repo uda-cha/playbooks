@@ -1,0 +1,29 @@
+---
+- name: install prerequisite packages of xrdp(dnf)
+  dnf:
+    name: epel-release
+    update_cache: yes
+  when: "ansible_pkg_mgr == 'dnf'"
+
+- name: xrdp install(dnf)
+  dnf:
+    name:
+      - xrdp
+      - tigervnc-server
+    update_cache: yes
+  when: "ansible_pkg_mgr == 'dnf'"
+
+- name: allow 3389/tcp(RedHat)
+  firewalld:
+    port: 3389/tcp
+    permanent: yes
+    state: enabled
+    immediate: yes
+  when: "ansible_os_family == 'RedHat'"
+
+- name: enable and start rdp(RedHat)
+  systemd:
+    name: xrdp
+    enabled: yes
+    state: started
+  when: "ansible_os_family == 'RedHat'"

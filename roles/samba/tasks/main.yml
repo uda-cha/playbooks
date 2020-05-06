@@ -13,6 +13,21 @@
   when: "ansible_pkg_mgr == 'yum'"
   notify: restart samba
 
+- name: samba install(dnf)
+  yum:
+    name: samba
+    update_cache: yes
+  when: "ansible_pkg_mgr == 'dnf'"
+  notify: restart samba
+
+- name: allow samba port by firewalld
+  firewalld:
+    service: samba
+    permanent: yes
+    state: enabled
+    immediate: yes
+  when: "ansible_os_family == 'RedHat'"
+
 - name: create nogroup
   group:
     name: nogroup
@@ -25,6 +40,7 @@
     mode: 0777
     owner: nobody
     group: nogroup
+    setype: samba_share_t
 
 - name: samba mkdir for private
   file:
@@ -33,6 +49,7 @@
     mode: 0777
     owner: "{{ samba_valid_users_private }}"
     #groupはownerから自動的に判別させる
+    setype: samba_share_t
   when:
     - samba_path_private is defined
     - samba_valid_users_private is defined
