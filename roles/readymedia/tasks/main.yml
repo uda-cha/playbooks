@@ -37,4 +37,3 @@
   systemd:
     name: minidlna
     enabled: yes
-    state: restarted
