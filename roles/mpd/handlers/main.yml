@@ -1,0 +1,6 @@
+---
+- name: restart mpd
+  systemd:
+    name: mpd
+    state: restarted
+  listen: restart_mpd

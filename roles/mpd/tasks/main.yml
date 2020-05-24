@@ -1,0 +1,36 @@
+---
+- name: install prerequisite packages of mpd(dnf)
+  dnf:
+    name:
+      - epel-release
+      - https://download1.rpmfusion.org/free/el/rpmfusion-free-release-8.noarch.rpm
+    update_cache: yes
+  when: "ansible_pkg_mgr == 'dnf'"
+
+- name: install mpd(dnf)
+  dnf:
+    name: mpd
+  when: "ansible_pkg_mgr == 'dnf'"
+  notify: restart_mpd
+
+- name: allow 6600/tcp(RedHat)
+  firewalld:
+    port: 6600/tcp
+    permanent: yes
+    state: enabled
+    immediate: yes
+  when: "ansible_os_family == 'RedHat'"
+
+- name: mpd distribute config file
+  template:
+    src: mpd.conf.j2
+    dest: /etc/mpd.conf
+    owner: root
+    group: root
+    mode: 0644
+  notify: restart_mpd
+
+- name: enable mpd
+  systemd:
+    name: mpd
+    enabled: yes
