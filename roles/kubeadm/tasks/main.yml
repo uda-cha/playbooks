@@ -1,4 +1,9 @@
 ---
+- name: remove zram-generator to disable swap
+  dnf:
+    name: zram-generator
+    state: absent
+
 - name: load br_netfilter
   modprobe:
     name: br_netfilter
