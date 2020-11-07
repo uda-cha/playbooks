@@ -1,0 +1,5 @@
+---
+- hosts: k8s
+  roles:
+    - role: docker
+    - role: kubeadm

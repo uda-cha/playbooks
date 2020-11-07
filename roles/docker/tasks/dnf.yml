@@ -1,0 +1,26 @@
+---
+- name: add docker repository(dnf)
+  get_url:
+    url: https://download.docker.com/linux/fedora/docker-ce.repo
+    dest: /etc/yum.repos.d/docker-ce.repo
+
+#- name: install docker(dnf)
+#  dnf:
+#    name:
+#      - docker-ce
+#      - docker-ce-cli
+#      - containerd.io
+#    update_cache: yes
+#  notify: restart docker
+
+- name: install docker(dnf)
+  dnf:
+    name:
+      - https://download.docker.com/linux/fedora/32/x86_64/stable/Packages/containerd.io-1.3.7-3.1.fc32.x86_64.rpm
+      - https://download.docker.com/linux/fedora/32/x86_64/stable/Packages/docker-ce-19.03.13-3.fc32.x86_64.rpm
+      - https://download.docker.com/linux/fedora/32/x86_64/stable/Packages/docker-ce-cli-19.03.13-3.fc32.x86_64.rpm
+  notify: restart docker
+
+- name: backward compatibility for Cgroups
+  command: grubby --update-kernel=ALL --args="systemd.unified_cgroup_hierarchy=0"
+...
