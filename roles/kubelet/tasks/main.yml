@@ -1,0 +1,12 @@
+---
+- name: mkdir for cni plugin
+  file:
+    path: /opt/cni
+    state: directory
+
+- name: create symlink for cni plugin
+  file:
+    path: /opt/cni/bin
+    src: /usr/libexec/cni
+    state: link
+    force: yes
