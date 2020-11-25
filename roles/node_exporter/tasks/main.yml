@@ -1,0 +1,22 @@
+---
+- name: enable ibotty/prometheus-exporters
+  command:
+    cmd: dnf copr enable ibotty/prometheus-exporters -y
+    creates: /etc/yum.repos.d/_copr:copr.fedorainfracloud.org:ibotty:prometheus-exporters.repo
+
+- name: install node_exporter
+  dnf:
+    name: node_exporter
+
+- name: allow 9100/tcp by firewalld
+  firewalld:
+    port: 9100/tcp
+    permanent: yes
+    state: enabled
+    immediate: yes
+
+- name: start node_exporter
+  systemd:
+    name: node_exporter
+    enabled: yes
+    state: started

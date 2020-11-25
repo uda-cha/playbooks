@@ -17,3 +17,4 @@
       readymedia_friendly_name: "DLNAServer(srtevmcos801)"
     - role: mpd
       mpd_music_directory: "/samba/share/01_music"
+    - role: node_exporter
