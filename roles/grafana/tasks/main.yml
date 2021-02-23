@@ -1,0 +1,24 @@
+---
+- name: add grafana repo
+  copy:
+    src: grafana.repo
+    dest: /etc/yum.repos.d/grafana.repo
+
+- name: install grafana
+  dnf:
+    name: grafana
+    state: present
+
+- name: enable grafana service
+  systemd:
+    name: grafana-server
+    enabled: yes
+    state: reloaded
+
+- name: allow grafana port by firewalld
+  firewalld:
+    port: 3000/tcp
+    permanent: yes
+    state: enabled
+    immediate: yes
+  when: "ansible_os_family == 'RedHat'"

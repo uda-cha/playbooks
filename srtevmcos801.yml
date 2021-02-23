@@ -18,3 +18,4 @@
     - role: mpd
       mpd_music_directory: "/samba/share/01_music"
     - role: node_exporter
+    - role: grafana
