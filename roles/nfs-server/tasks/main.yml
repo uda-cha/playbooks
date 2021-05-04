@@ -1,0 +1,35 @@
+---
+- name: install nfs server
+  dnf:
+    name: nfs-utils
+
+- name: mkdir for export dir
+  file:
+    path: "{{ nfs_export_dir }}"
+    state: directory
+
+- name: copy /etc/exports
+  template:
+    src: exports.j2
+    dest: /etc/exports
+
+- name: open ports for nfs-server
+  firewalld:
+    service: "{{ item }}"
+    permanent: yes
+    state: enabled
+    immediate: yes
+  with_items:
+    - nfs
+#    - nfs3
+#    - mountd
+#    - rpc-bind
+
+- name: enable and start nfs-server
+  systemd:
+    name: "{{ item }}"
+    state: restarted
+    enabled: yes
+  with_items:
+    - rpcbind
+    - nfs-server

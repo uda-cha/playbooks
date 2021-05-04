@@ -11,6 +11,9 @@
       samba_path: "/samba/share/"
       samba_path_private: "/samba/private/"
       samba_valid_users_private: "{{ ansible_ssh_user }}"
+    - role: nfs-server
+      nfs_export_dir: "/nfs"
+      nfs_allow_ip_range: "*"
     - role: xrdp
     - role: readymedia
       readymedia_audio_dir: "/samba/share/02_voice"
