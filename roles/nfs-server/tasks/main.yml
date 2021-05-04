@@ -7,6 +7,7 @@
   file:
     path: "{{ nfs_export_dir }}"
     state: directory
+    mode: "1777"
 
 - name: copy /etc/exports
   template:
