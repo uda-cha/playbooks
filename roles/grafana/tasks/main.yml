@@ -13,7 +13,7 @@
   systemd:
     name: grafana-server
     enabled: yes
-    state: reloaded
+    state: restarted
 
 - name: allow grafana port by firewalld
   firewalld:
